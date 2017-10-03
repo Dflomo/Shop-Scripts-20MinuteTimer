@@ -1,0 +1,7 @@
+function readLogInfo(ss) {
+  
+//  var ssURL = "https://docs.google.com/a/workshopcafe.com/spreadsheets/d/1wft0ninuYSdKJNriN0x6OtEHmPmNm8aSl-SPz4Kh954/edit?usp=sharing";
+  var data = ss.getDataRange().getValues();
+  
+  return data;
+}
