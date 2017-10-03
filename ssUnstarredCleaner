@@ -1,0 +1,27 @@
+function ssUnstarredCleaner(dataArray, ssSheet, ssStorageSheet) {
+  Logger.log("Entered ssUnstarredCleaner\n");
+  var ssData = readLogInfo(ssSheet);
+  var found = false;
+  
+  if(ssData != null){
+    
+    for(var dataIDIndex in ssData){
+      found = false;
+      
+      if(dataArray != null){
+        for(var emailIDIndex in dataArray){
+          if(ssData[dataIDIndex][0] == dataArray[emailIDIndex].getId()){
+            found = true;
+          }
+        }
+      }
+      //If the Email ID was found in the 
+      if(found != true){
+        ssSheet.deleteRow(dataIDIndex + 1);
+        ssStorageSheet.appendRow([ssData[dataIDIndex][0], ssData[dataIDIndex][1], ssData[dataIDIndex][2], ssData[dataIDIndex][3]]);
+      }
+    }//END FOR LOOP - ssData
+  }//END Null Checker for Spreadsheet Data
+  
+  Logger.log("Exiting ssUnstarredCleaner\n");
+}
