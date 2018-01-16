@@ -1,4 +1,5 @@
 # Shop-Scripts-20MinuteTimer
+
 20 Minute Email Tracker
 
 This company depends heavily on outsourcing the monitoring of our inbox, and heavily on google applications. I took it upon myself
@@ -17,4 +18,45 @@ another spreadsheet, update the deleted spreadsheet accurately, and transition c
 The application sends three notifications, before "deleteing" the information and copying it to the other spreadsheet.
 
 PM with questions or comments!
+
+## Getting Started
+
+
+
+### Prerequisites
+
+
+
+### Installing
+
+## Running the tests
+
+
+### Break down into end to end tests
+
+
+### And coding style tests
+
+
+
+## Deployment
+
+
+## Built With
+
+## Contributing
+
+## Versioning
+
+## Authors
+
+## License
+
+
+## Acknowledgments
+
+* Hat tip to anyone who's code was used
+* Inspiration
+* etc
+
 
