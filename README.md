@@ -16,5 +16,5 @@ another spreadsheet, update the deleted spreadsheet accurately, and transition c
 
 The application sends three notifications, before "deleteing" the information and copying it to the other spreadsheet.
 
-PM with questions or advise!
+PM with questions or comments!
 
