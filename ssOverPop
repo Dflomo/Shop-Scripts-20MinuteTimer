@@ -1,0 +1,11 @@
+function ssOverPopCleaner(ssSheet) {
+  var ssData = ssSheet.getDataRange().getValues();
+  
+//  Logger.log(ssData.length);
+  
+  if(ssData.length > 10){
+    ssSheet.deleteRows(2, ssData.length);
+  }
+  
+  return true;
+}
