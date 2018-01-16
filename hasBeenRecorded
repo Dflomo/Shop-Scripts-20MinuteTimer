@@ -1,0 +1,13 @@
+function myFunction(emailID, ss) {
+  var ssData = ssSheet.getDataRange().getValues();
+  
+  for(var each in ssData){
+    if(ssData[each][0] == emailID){
+      return true;
+    }
+    else{
+      return false
+    }
+  }
+  
+}
