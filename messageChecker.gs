@@ -1,3 +1,5 @@
+//messageChecker (MAIN FUNCTION) - Program start
+
 function messageChecker() {
   var gInbox = GmailApp;
   
@@ -10,7 +12,7 @@ function messageChecker() {
   var dateDiff = 0;
   var minDiff = 0;
   var newDateProperty;
-  var deleted;
+  var alreadyDeleted;
   var alreadyRecorded;
   var ssData;
   
@@ -37,7 +39,7 @@ function messageChecker() {
   
   //  Google Script Properties (per script)
   var scriptProperties = PropertiesService.getScriptProperties();  
-//  var newPropSet = {endRange: 1515045900000, tenTime: 1515045600000, sixTime: 1514988000000, startRange: 1514987700000};
+//  var newPropSet = {endRange: 1518501900000, tenTime: 1518501600000, sixTime: 1518444000000, startRange: 1518443700000};
 //  scriptProperties.setProperties(newPropSet, true);
   
   var startRange = scriptProperties.getProperty("startRange"); 
@@ -47,80 +49,76 @@ function messageChecker() {
   
   //  Email threads, and spreadsheet initialization
   var tempMessageArray = gInbox.search('is:starred');
-  
-  //  Logger.log(newDate.getTime());
-  //  Logger.log(newDate.getTime());
+ 
   Logger.log("Ten Time: " + tenTime);
   Logger.log("Six Time: " + sixTime);
   Logger.log("End Range: " + endRange);
   Logger.log("Start Range: " + startRange);  
   
+  //#1 IF STATEMENT
   if((newDate <= tenTime) && (newDate >= sixTime)){
     Logger.log("Entered main loop\n");
-    ssOverPopCleaner(ssMainRecorderSheet);
-    ssNotiCleaner(ssMainRecorderSheet, ssDeleteSheet, currSS);
-    ssUnstarredCleaner(tempMessageArray, ssMainRecorderSheet, ssDeleteSheet, currSS);
     
-    //    FOR Loop - Traverses the GmailThread[] Array
+    ssNotiCleaner(ssMainRecorderSheet, ssDeleteSheet, currSS);
+    ssUnstarredCleaner(ssMainRecorderSheet, ssDeleteSheet, currSS);
+    
     for(var i = 0; i < tempMessageArray.length; i++){
       
       emailDataSubject = messSubject = tempMessageArray[i].getFirstMessageSubject();
       emailDataTime = dateDiff = newDate - tempMessageArray[i].getLastMessageDate();
       emailDataID = tempMessageArray[i].getId();
+     
       minDiff = parseInt(((dateDiff/1000)/60));
-      
       ssData = ssMainRecorderSheet.getDataRange().getValues();
-      alreadyRecorded = hasBeenRecorded (emailDataID, ssMainRecorderSheet);
-      deleted = hasBeenDeleted(emailDataID, currSS);
       
-      //CHECK - Compares to see if the difference of the email thread time and the current time is greater than 20 mins (in miliseconds)
-      if(dateDiff >= 1200000 && !deleted){
-        
-        //FOR LOOP - Traverses the Spread Sheet Data 
+      alreadyRecorded = hasBeenRecorded(emailDataID, ssMainRecorderSheet, errSS);
+      alreadyDeleted = hasBeenDeleted(emailDataID, currSS, errSS);
+      
+      Logger.log(emailDataID + "\n\n SUBJECT LINE = " + emailDataSubject);
+      Logger.log(emailDataID + " OVER 20 MINUTES? = " + (dateDiff >= 1200000));
+      Logger.log(emailDataID + " HAS BEEN RECORDED? = " + alreadyRecorded);
+      Logger.log(emailDataID + " HAS BEEN DELETED? = " + alreadyDeleted + "\n\n");
+      
+      if(dateDiff >= 1200000 && !alreadyRecorded && !alreadyDeleted){
+        Logger.log(emailDataID + " + " + emailDataTime + " + " + emailDataSubject);
+        ssMainRecorderSheet.appendRow([emailDataID, emailDataTime, emailDataSubject, 1]);
+        MailApp.sendEmail(emailDerek, "(OLD EMAIL " + minDiff + "+ MINS [FiDi]) " + emailDataSubject, emailBody, {cc: "laone.oagile@workshopcafe.com, rich.menendez@workshopcafe.com, heather.tom@workshopcafe.com, kevin.walls@workshopcafe.com, grace.lopez@workshopcafe.com"});
+//            MailApp.sendEmail(emailLaone, "(OLD EMAIL " + minDiff + "+ MINS [FiDi]) " + emailDataSubject, emailBody);
+        //            MailApp.sendEmail(emailRich, "(OLD EMAIL " + minDiff + "+ MINS [FiDi]) " + emailDataSubject, emailBody);           
+      }
+      else if(dateDiff >= 1200000 && !alreadyDeleted && alreadyRecorded){
+         
         for(var each in ssData){
-          
-          //CHECK - Compares Email IDs recorded in SS Data, and the Email IDs from the email thread array
-          if(parseInt(ssData[each][0]) == parseInt(emailDataID)){
+          Logger.log("The Length of ssData.length =" + ssData.length);
+          Logger.log("The Length of tempMessageArray =" + tempMessageArray.length);
+          if(ssData[each][0] == emailDataID){
             
-            ssMainRecorderSheet.getRange("B" + (each + 1)).setValue(emailDataTime);
+            ssMainRecorderSheet.getRange("B" + (parseInt(each) + 1)).setValue(emailDataTime);
             
-            //CHECK - Looks for emails that are 40 - 45 minutes old (miliseconds)
             if(ssData[each][1] >= 2400000 && ssData[each][1] <= 2700000){
         
-              //Sets the email warning value
-              ssMainRecorderSheet.getRange("D" + (each + 1)).setValue(2);
-              MailApp.sendEmail(emailDerek, "(OLD EMAIL " + minDiff + "+ MINS) " +emailDataSubject, emailBody);
-              MailApp.sendEmail(emailLaone, "(OLD EMAIL " + minDiff + "+ MINS) " + emailDataSubject, emailBody);
-              MailApp.sendEmail(emailRich, "(OLD EMAIL " + minDiff + "+ MINS) " + emailDataSubject, emailBody);
+              ssMainRecorderSheet.getRange("D" + (parseInt(each) + 1)).setValue(2);
+              MailApp.sendEmail(emailDerek, "(OLD EMAIL " + minDiff + "+ MINS [FiDi]) " +emailDataSubject, emailBody ,{cc: "laone.oagile@workshopcafe.com, rich.menendez@workshopcafe.com, heather.tom@workshopcafe.com, kevin.walls@workshopcafe.com, grace.lopez@workshopcafe.com"});
+//              MailApp.sendEmail(emailLaone, "(OLD EMAIL " + minDiff + "+ MINS [FiDi]) " + emailDataSubject, emailBody);
+//              MailApp.sendEmail(emailRich, "(OLD EMAIL " + minDiff + "+ MINS [FiDi]) " + emailDataSubject, emailBody);
             }
-            //CHECK - Looks for emails that are 60 - 65 minutes old (milliseconds)
             else if (ssData[each][1] >= 3600000 && ssData[each][1] <= 3900000){
               
-              //Sets the email warning value
-              ssMainRecorderSheet.getRange("D" + (each + 1)).setValue(3);
-              MailApp.sendEmail(emailDerek, "(OLD EMAIL " + minDiff + "+ MINS)" +emailDataSubject, emailBody);
-              MailApp.sendEmail(emailLaone, "(OLD EMAIL " + minDiff + "+ MINS) " + emailDataSubject, emailBody);
-              MailApp.sendEmail(emailRich, "(OLD EMAIL " + minDiff + "+ MINS) " + emailDataSubject, emailBody);
+              ssMainRecorderSheet.getRange("D" + (parseInt(each)+ 1)).setValue(3);
+              MailApp.sendEmail(emailDerek, "(OLD EMAIL " + minDiff + "+ MINS [FiDi])" +emailDataSubject, emailBody, {cc: "laone.oagile@workshopcafe.com, rich.menendez@workshopcafe.com, heather.tom@workshopcafe.com, kevin.walls@workshopcafe.com, grace.lopez@workshopcafe.com"});
+//              MailApp.sendEmail(emailLaone, "(OLD EMAIL " + minDiff + "+ MINS [FiDi]) " + emailDataSubject, emailBody);
+//              MailApp.sendEmail(emailRich, "(OLD EMAIL " + minDiff + "+ MINS [FiDi]) " + emailDataSubject, emailBody);
             }
-            //CHECK - Looks for emails that are 80+ minutes old (possible manager email integration)
             else if(ssData[each][1] > 4800000){
               //Sets the email warning value
-              ssMainRecorderSheet.getRange("D" + (each + 1)).setValue(4);
+              ssMainRecorderSheet.getRange("D" + (parseInt(each) + 1)).setValue(4);
             }
           }
-          else if(!alreadyRecorded){
-            writeLogInfo(ssMainRecorderSheet, emailDataID, emailDataTime, emailDataSubject, 1);
-            MailApp.sendEmail(emailDerek, "(OLD EMAIL " + minDiff + "+ MINS) " + emailDataSubject, emailBody);
-            MailApp.sendEmail(emailLaone, "(OLD EMAIL " + minDiff + "+ MINS) " + emailDataSubject, emailBody);
-            MailApp.sendEmail(emailRich, "(OLD EMAIL " + minDiff + "+ MINS) " + emailDataSubject, emailBody);           
-          }
         }
-      }//END Initial 20 Min comparison
-      else if(deleted){
-        //Send Manager Email
       }
-    }//END For Loop: Inbox Messages
+    }
   }
+  //#1b IF STATEMENT
   else if(newDate >= tenTime && newDate <= endRange){
 //    Logger.log("Got to 10:00pm - 10:05pm\n");
     var temp = 0;
@@ -144,16 +142,16 @@ function messageChecker() {
     var newPropSet = {endRange: tempEndRange, tenTime: tempTenTime, sixTime: tempSixTime, startRange: tempStartRange};
     scriptProperties.setProperties(newPropSet, true);
     
-    MailApp.sendEmail(emailDerek, "Going to Sleep!(20 Min Counter)", "The 20 Min Script has sensed that it is roughly 10:00 - 10:05pm! Time to shut 'er down captain!");
-    MailApp.sendEmail(emailLaone, "Going to Sleep!(20 Min Counter)", "The 20 Min Script has sensed that it is roughly 10:00 - 10:05pm! Time to shut 'er down captain!");
+    MailApp.sendEmail(emailDerek, "Going to Sleep!(20 Min Counter[FiDi])", "The 20 Min Script has sensed that it is roughly 10:00 - 10:05pm! Time to shut 'er down captain!");
+    MailApp.sendEmail(emailLaone, "Going to Sleep!(20 Min Counter[FiDi])", "The 20 Min Script has sensed that it is roughly 10:00 - 10:05pm! Time to shut 'er down captain!");
     
     delSS.insertSheet(tomorrowStr, delSS.getNumSheets(), {template: ssTemplate});
 
   }
   else if(newDate >= startRange && newDate < sixTime){
 //    Logger.log("Got to 5:55am - 6:00am\n");    
-    MailApp.sendEmail(emailDerek, "Waking Up!(20 Min Counter)", "The 20 Min Script has sensed that it is roughly 5:55am - 6:00am! Yar! There be sun on the horizon!");
-    MailApp.sendEmail(emailLaone, "Waking Up!(20 Min Counter)", "The 20 Min Script has sensed that it is roughly 5:55am - 6:00am! Yar! There be sun on the horizon!");
+    MailApp.sendEmail(emailDerek, "Waking Up!(20 Min Counter[FiDi])", "The 20 Min Script has sensed that it is roughly 5:55am - 6:00am! Yar! There be sun on the horizon!");
+    MailApp.sendEmail(emailLaone, "Waking Up!(20 Min Counter[FiDi])", "The 20 Min Script has sensed that it is roughly 5:55am - 6:00am! Yar! There be sun on the horizon!");
   }
   else if(newDate > endRange && newDate < startRange){ Logger.log("Currently Sleeping\n"); }
   Logger.log("Exiting Main Code");
