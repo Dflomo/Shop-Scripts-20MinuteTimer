@@ -19,7 +19,7 @@ function messageChecker() {
   //  Email Variables
   var emailBody = "This email has been starred for over 20 minutes! Lets take care of it!";
   var email1 = "blah@blah.com";
-  var email2 = "blah@blah.com;
+  var email2 = "blah@blah.com";
   var email3 = "blah@blah.com";
   
   //  Spreadsheet Variables
