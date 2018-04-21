@@ -18,18 +18,18 @@ function messageChecker() {
   
   //  Email Variables
   var emailBody = "This email has been starred for over 20 minutes! Lets take care of it!";
-  var emailDerek = "derek.florimonte@workshopcafe.com";
-  var emailLaone = "laone.oagile@workshopcafe.com";
-  var emailRich = "rich.menendez@workshopcafe.com";
+  var email1 = "blah@blah.com";
+  var email2 = "blah@blah.com;
+  var email3 = "blah@blah.com";
   
   //  Spreadsheet Variables
-  var ssURL = "https://docs.google.com/a/workshopcafe.com/spreadsheets/d/1wft0ninuYSdKJNriN0x6OtEHmPmNm8aSl-SPz4Kh954/edit?usp=sharing";
+  var ssURL = "";
   var ss = SpreadsheetApp.openByUrl(ssURL);
   var ssMainRecorderSheet = ss.getSheetByName("20 Min Recorder");
   var ssDeleteSheet = ss.getSheetByName("Deleted");
   
   //TEST SHEET VARIABLE - FOR MOD METRICS
-  var delSSURL = "https://docs.google.com/a/workshopcafe.com/spreadsheets/d/18AM0vRTZJ2KbMOXPRrOLbw9sg1DJNIul-lhk6xHsvkU/edit?usp=sharing";
+  var delSSURL = "";
   var delSS = SpreadsheetApp.openByUrl(delSSURL);
   var currSS = delSS.getSheets()[delSS.getSheets().length -1];
   var ssTemplate = delSS.getSheetByName("Template");
@@ -82,7 +82,7 @@ function messageChecker() {
       if(dateDiff >= 1200000 && !alreadyRecorded && !alreadyDeleted){
         Logger.log(emailDataID + " + " + emailDataTime + " + " + emailDataSubject);
         ssMainRecorderSheet.appendRow([emailDataID, emailDataTime, emailDataSubject, 1]);
-        MailApp.sendEmail(emailDerek, "(OLD EMAIL " + minDiff + "+ MINS [FiDi]) " + emailDataSubject, emailBody, {cc: "laone.oagile@workshopcafe.com, rich.menendez@workshopcafe.com, heather.tom@workshopcafe.com, kevin.walls@workshopcafe.com, grace.lopez@workshopcafe.com"});
+        MailApp.sendEmail(email1, "(OLD EMAIL " + minDiff + "+ MINS [FiDi]) " + emailDataSubject, emailBody, {cc: ""});
 //            MailApp.sendEmail(emailLaone, "(OLD EMAIL " + minDiff + "+ MINS [FiDi]) " + emailDataSubject, emailBody);
         //            MailApp.sendEmail(emailRich, "(OLD EMAIL " + minDiff + "+ MINS [FiDi]) " + emailDataSubject, emailBody);           
       }
@@ -98,14 +98,14 @@ function messageChecker() {
             if(ssData[each][1] >= 2400000 && ssData[each][1] <= 2700000){
         
               ssMainRecorderSheet.getRange("D" + (parseInt(each) + 1)).setValue(2);
-              MailApp.sendEmail(emailDerek, "(OLD EMAIL " + minDiff + "+ MINS [FiDi]) " +emailDataSubject, emailBody ,{cc: "laone.oagile@workshopcafe.com, rich.menendez@workshopcafe.com, heather.tom@workshopcafe.com, kevin.walls@workshopcafe.com, grace.lopez@workshopcafe.com"});
+              MailApp.sendEmail(email1, "(OLD EMAIL " + minDiff + "+ MINS [FiDi]) " +emailDataSubject, emailBody ,{cc: ""});
 //              MailApp.sendEmail(emailLaone, "(OLD EMAIL " + minDiff + "+ MINS [FiDi]) " + emailDataSubject, emailBody);
 //              MailApp.sendEmail(emailRich, "(OLD EMAIL " + minDiff + "+ MINS [FiDi]) " + emailDataSubject, emailBody);
             }
             else if (ssData[each][1] >= 3600000 && ssData[each][1] <= 3900000){
               
               ssMainRecorderSheet.getRange("D" + (parseInt(each)+ 1)).setValue(3);
-              MailApp.sendEmail(emailDerek, "(OLD EMAIL " + minDiff + "+ MINS [FiDi])" +emailDataSubject, emailBody, {cc: "laone.oagile@workshopcafe.com, rich.menendez@workshopcafe.com, heather.tom@workshopcafe.com, kevin.walls@workshopcafe.com, grace.lopez@workshopcafe.com"});
+              MailApp.sendEmail(email1, "(OLD EMAIL " + minDiff + "+ MINS [FiDi])" +emailDataSubject, emailBody, {cc: ""});
 //              MailApp.sendEmail(emailLaone, "(OLD EMAIL " + minDiff + "+ MINS [FiDi]) " + emailDataSubject, emailBody);
 //              MailApp.sendEmail(emailRich, "(OLD EMAIL " + minDiff + "+ MINS [FiDi]) " + emailDataSubject, emailBody);
             }
@@ -142,16 +142,16 @@ function messageChecker() {
     var newPropSet = {endRange: tempEndRange, tenTime: tempTenTime, sixTime: tempSixTime, startRange: tempStartRange};
     scriptProperties.setProperties(newPropSet, true);
     
-    MailApp.sendEmail(emailDerek, "Going to Sleep!(20 Min Counter[FiDi])", "The 20 Min Script has sensed that it is roughly 10:00 - 10:05pm! Time to shut 'er down captain!");
-    MailApp.sendEmail(emailLaone, "Going to Sleep!(20 Min Counter[FiDi])", "The 20 Min Script has sensed that it is roughly 10:00 - 10:05pm! Time to shut 'er down captain!");
+    MailApp.sendEmail(email1, "Going to Sleep!(20 Min Counter[FiDi])", "The 20 Min Script has sensed that it is roughly 10:00 - 10:05pm! Time to shut 'er down captain!");
+    MailApp.sendEmail(email2, "Going to Sleep!(20 Min Counter[FiDi])", "The 20 Min Script has sensed that it is roughly 10:00 - 10:05pm! Time to shut 'er down captain!");
     
     delSS.insertSheet(tomorrowStr, delSS.getNumSheets(), {template: ssTemplate});
 
   }
   else if(newDate >= startRange && newDate < sixTime){
 //    Logger.log("Got to 5:55am - 6:00am\n");    
-    MailApp.sendEmail(emailDerek, "Waking Up!(20 Min Counter[FiDi])", "The 20 Min Script has sensed that it is roughly 5:55am - 6:00am! Yar! There be sun on the horizon!");
-    MailApp.sendEmail(emailLaone, "Waking Up!(20 Min Counter[FiDi])", "The 20 Min Script has sensed that it is roughly 5:55am - 6:00am! Yar! There be sun on the horizon!");
+    MailApp.sendEmail(email1, "Waking Up!(20 Min Counter[FiDi])", "The 20 Min Script has sensed that it is roughly 5:55am - 6:00am! Yar! There be sun on the horizon!");
+    MailApp.sendEmail(email2, "Waking Up!(20 Min Counter[FiDi])", "The 20 Min Script has sensed that it is roughly 5:55am - 6:00am! Yar! There be sun on the horizon!");
   }
   else if(newDate > endRange && newDate < startRange){ Logger.log("Currently Sleeping\n"); }
   Logger.log("Exiting Main Code");
